@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>100 Days of Solitude — Non</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Caveat:wght@400;500&family=Josefin+Sans:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+  <style>
+  /* ── RESET ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  button { font: inherit; cursor: pointer; }
+
+  /* ── TOKENS ─────────────────────────────────────────── */
+  :root {
+    --paper:        #f4ecd8;
+    --paper-deep:   #ebe0c4;
+    --paper-shadow: #d6c89e;
+    --ink:          #1f1a14;
+    --ink-soft:     #4a4036;
+    --ink-faint:    #8a7e6a;
+    --seal:         #b83a2a;
+    --seal-deep:    #8a2818;
+    --night:        #1a2030;
+    --night-soft:   #2c3450;
+    --night-paper:  #d8d2c2;
+    --gold:         #c89a4a;
+    --rule:         rgba(31,26,20,0.15);
+    --f-serif:      "EB Garamond","Cormorant Garamond",Georgia,serif;
+    --f-display:    "Cormorant Garamond",Georgia,serif;
+    --f-hand:       Caveat,cursive;
+    --f-sans:       "Josefin Sans",system-ui,sans-serif;
+    --t-display:    clamp(1.75rem,3.2vw,2.55rem);
+    --t-body:       clamp(0.92rem,1.05vw,1.06rem);
+    --t-micro:      0.7rem;
+  }
+
+  /* ── STAGE ─────────────────────────────────────────── */
+  html, body {
+    width:100%; height:100%; overflow:hidden;
+    background: radial-gradient(ellipse at 50% 40%, #2a2620 0%, #15110b 100%);
+    -webkit-font-smoothing: antialiased;
+    font-family: var(--f-serif);
+  }
+  .stage {
+    position:fixed; inset:0;
+    display:grid; place-items:center;
+    perspective:2600px;
+  }
+
+  /* ── BOOK ─────────────────────────────────────────── */
+  .book {
+    position:relative;
+    width: min(92vw, 1480px);
+    aspect-ratio: 1480/960;
+    transform-style: preserve-3d;
+    transform: rotateX(1.8deg);
+    transition: transform 0.6s ease;
+  }
+  @keyframes butterfly-rest {
+    0%,100% { transform: rotateX(1.8deg) rotateY(-0.8deg) translateZ(0); }
+    50%      { transform: rotateX(2.4deg) rotateY(0.8deg)  translateZ(4px); }
+  }
+  .book.idle { animation: butterfly-rest 7s ease-in-out infinite; }
+
+  /* ── SPREADS ─────────────────────────────────────────── */
+  .spread {
+    position:absolute; inset:0;
+    display:none;
+    grid-template-columns: 1fr 1fr;
+    box-shadow: 0 24px 90px rgba(0,0,0,0.6), 0 4px 18px rgba(0,0,0,0.4);
+  }
+  .spread.active { display:grid; }
+
+  /* Spine shadow */
+  .spread::after {
+    content:'';
+    position:absolute; left:50%; top:0; bottom:0;
+    width:3px;
+    transform:translateX(-50%);
+    background: linear-gradient(to right,
+      rgba(0,0,0,0.22) 0%,
+      rgba(0,0,0,0.06) 50%,
+      rgba(0,0,0,0.22) 100%);
+    pointer-events:none; z-index:5;
+  }
+
+  /* ── PAGES ─────────────────────────────────────────── */
+  .page {
+    position:relative; overflow:hidden;
+    background: var(--paper);
+    padding: clamp(2rem,4vw,3.5rem) clamp(1.8rem,3.2vw,3rem);
+    color: var(--ink);
+  }
+  .page.left { border-right:1px solid var(--rule); }
+
+  /* Parchment grain */
+  .page::before {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    opacity:0.55;
+  }
+
+  /* Night spread */
+  .spread.night .page { background:var(--night); color:var(--night-paper); }
+  .spread.night .page.left { border-right:1px solid rgba(255,255,255,0.05); }
+
+  /* ── TYPOGRAPHY ─────────────────────────────────────── */
+  .section-lbl {
+    font-family:var(--f-sans); font-size:var(--t-micro);
+    letter-spacing:0.2em; text-transform:uppercase;
+    color:var(--ink-faint); margin-bottom:0.6em; display:block;
+  }
+  .spread.night .section-lbl { color:rgba(216,210,194,0.45); }
+
+  .roman {
+    font-family:var(--f-sans); font-size:var(--t-micro);
+    letter-spacing:0.12em; color:var(--seal);
+    margin-bottom:0.25em; display:block;
+  }
+  .spread.night .roman { color:var(--gold); }
+
+  h2 {
+    font-family:var(--f-display); font-size:var(--t-display);
+    font-weight:400; line-height:1.1; color:var(--ink);
+    margin-bottom:1.3em;
+  }
+  .spread.night h2 { color:var(--night-paper); }
+
+  .body {
+    font-family:var(--f-serif); font-size:var(--t-body);
+    line-height:1.8; color:var(--ink-soft);
+  }
+  .spread.night .body { color:rgba(216,210,194,0.78); }
+  .body p+p { margin-top:0.85em; text-indent:1.4em; }
+
+  /* Drop cap */
+  .body p:first-child::first-letter {
+    font-family:var(--f-display); font-weight:500;
+    float:left; font-size:3.1em; line-height:0.85;
+    padding:6px 8px 0 0; color:var(--seal);
+  }
+  .spread.night .body p:first-child::first-letter { color:var(--gold); }
+
+  .body em { color:var(--seal); font-style:italic; }
+  .spread.night .body em { color:var(--gold); }
+
+  .caption {
+    font-family:var(--f-serif); font-style:italic;
+    font-size:0.82rem; color:var(--ink-faint); line-height:1.5;
+    max-width:42ch;
+  }
+  .spread.night .caption { color:rgba(216,210,194,0.55); }
+
+  .handwritten {
+    font-family:var(--f-hand); font-size:1.3rem;
+    color:var(--seal); line-height:1.3;
+  }
+  .spread.night .handwritten { color:var(--gold); }
+
+  /* Folio */
+  .folio {
+    position:absolute; bottom:1.5rem;
+    font-family:var(--f-serif); font-style:italic;
+    font-size:0.68rem; color:var(--ink-faint); letter-spacing:0.1em;
+  }
+  .page.left .folio  { left:2.2rem; }
+  .page.right .folio { right:2.2rem; }
+  .spread.night .folio { color:rgba(216,210,194,0.35); }
+
+  /* Big watermark number */
+  .big-num {
+    font-family:var(--f-display); font-weight:300;
+    font-size:clamp(5rem,11vw,8.5rem); line-height:1;
+    color:rgba(31,26,20,0.07); user-select:none;
+    position:absolute; bottom:2.5rem; right:2.5rem;
+  }
+  .spread.night .big-num { color:rgba(255,255,255,0.05); }
+
+  /* Center large text block */
+  .center-block {
+    display:flex; flex-direction:column;
+    justify-content:center; height:100%;
+    text-align:center;
+  }
+
+  /* H-rule */
+  hr.thin {
+    border:none; border-top:1px solid var(--rule);
+    margin:1.4em 0;
+  }
+  .spread.night hr.thin { border-top-color:rgba(255,255,255,0.08); }
+
+  /* Stars / decorators */
+  .stars {
+    font-size:1.2rem; letter-spacing:0.8em;
+    color:var(--seal); opacity:0.55;
+    display:block; margin:2rem 0;
+  }
+  .spread.night .stars { color:var(--gold); }
+
+  .dots-grid {
+    display:grid; grid-template-columns:repeat(4,1fr);
+    gap:1.1rem; opacity:0.3; color:var(--ink-faint);
+    font-size:1rem; line-height:1;
+    margin:2rem 0;
+  }
+
+  /* Map cities */
+  .city-list { margin-top:2em; }
+  .city-list .city {
+    font-family:var(--f-display); font-style:italic;
+    font-size:1.3rem; color:var(--ink);
+    padding:0.4em 0; border-bottom:1px solid var(--rule);
+    display:flex; align-items:center; gap:0.8em;
+  }
+  .city-list .city::before {
+    content:'→'; font-style:normal;
+    font-size:0.7rem; color:var(--seal); opacity:0.6;
+  }
+
+  /* Book list */
+  .booklist { list-style:none; margin-top:1.2em; }
+  .booklist li {
+    font-family:var(--f-sans); font-size:0.88rem;
+    font-weight:400; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--seal); padding:0.55em 0;
+    border-bottom:1px solid var(--rule);
+  }
+
+  /* Dictionary */
+  .dict-entry { margin-bottom:1.6em; }
+  .dict-term { font-family:var(--f-display); font-style:italic; font-size:1.08rem; color:var(--seal); }
+  .dict-pos  { font-family:var(--f-serif); font-style:italic; font-size:0.75rem; color:var(--ink-faint); margin-left:0.3em; }
+  .dict-def  { font-family:var(--f-serif); font-size:var(--t-body); line-height:1.6; color:var(--ink-soft); margin-top:0.25em; }
+
+  /* Aphorisms */
+  .aphorism-list { list-style:none; margin-top:1em; }
+  .aphorism-list li {
+    padding:0.6em 0; border-bottom:1px solid var(--rule);
+    font-family:var(--f-serif); font-size:var(--t-body); color:var(--ink-soft); line-height:1.55;
+  }
+  .aphorism-list li::before {
+    font-family:var(--f-sans); font-size:var(--t-micro);
+    color:var(--seal); margin-right:0.6em;
+    content:attr(data-n) '.';
+  }
+
+  /* Stats table */
+  .stats-tbl { width:100%; border-collapse:collapse; font-family:var(--f-serif); font-size:0.85rem; margin-top:1.2em; }
+  .stats-tbl td { padding:0.45em 0; border-bottom:1px solid var(--rule); vertical-align:top; }
+  .stats-tbl td:nth-child(1) { color:var(--ink-soft); width:62%; }
+  .stats-tbl td:nth-child(2) { color:var(--seal); font-weight:500; text-align:right; padding-right:1em; width:12%; }
+  .stats-tbl td:nth-child(3) { font-style:italic; color:var(--ink-faint); }
+
+  /* ── NEW SECTIONS ─────────────────────────────────── */
+  .meta-lbl {
+    font-family:var(--f-sans); font-size:var(--t-micro);
+    letter-spacing:0.25em; text-transform:uppercase;
+    color:var(--seal); display:block; margin-bottom:0.9em;
+  }
+
+  /* Methodology rules */
+  .rule-row {
+    display:flex; align-items:baseline; gap:1em;
+    padding:0.75em 0; border-bottom:1px solid var(--rule);
+  }
+  .rule-n {
+    font-family:var(--f-sans); font-size:var(--t-micro);
+    letter-spacing:0.15em; color:var(--seal); min-width:1em; flex-shrink:0;
+  }
+  .rule-txt {
+    font-family:var(--f-serif); font-size:var(--t-body); color:var(--ink-soft); line-height:1.5;
+  }
+
+  /* Framework diagram */
+  .diagram-wrap {
+    display:flex; flex-direction:column;
+    justify-content:center; align-items:center;
+    height:100%;
+  }
+  .diagram-wrap svg { width:100%; max-width:300px; height:auto; }
+
+  /* Butterfly decoration */
+  .butterfly-dec {
+    display:flex; justify-content:center; align-items:center;
+    height:100%;
+  }
+  .butterfly-dec svg {
+    width:clamp(100px,18vw,180px); height:auto;
+    color: var(--seal); opacity:0.35;
+  }
+
+  /* ── FLIP ANIMATIONS ─────────────────────────────────── */
+  @keyframes flipInFwd {
+    from { transform:perspective(2600px) rotateY(65deg) scale(0.96); opacity:0.5; }
+    to   { transform:perspective(2600px) rotateY(0)     scale(1);    opacity:1;   }
+  }
+  @keyframes flipOutBwd {
+    from { transform:perspective(2600px) rotateY(0)      scale(1);    opacity:1;   }
+    to   { transform:perspective(2600px) rotateY(-65deg) scale(0.96); opacity:0.5; }
+  }
+  @keyframes flipInBwd {
+    from { transform:perspective(2600px) rotateY(-65deg) scale(0.96); opacity:0.5; }
+    to   { transform:perspective(2600px) rotateY(0)      scale(1);    opacity:1;   }
+  }
+  @keyframes flipOutFwd {
+    from { transform:perspective(2600px) rotateY(0)     scale(1);    opacity:1;   }
+    to   { transform:perspective(2600px) rotateY(65deg) scale(0.96); opacity:0.5; }
+  }
+
+  .spread.fi-f { display:grid; transform-origin:center center;
+    animation: flipInFwd  .72s cubic-bezier(.22,.61,.36,1) both; }
+  .spread.fo-f { display:grid; transform-origin:center center;
+    animation: flipOutBwd .72s cubic-bezier(.55,.055,.675,.19) both; }
+  .spread.fi-b { display:grid; transform-origin:center center;
+    animation: flipInBwd  .72s cubic-bezier(.22,.61,.36,1) both; }
+  .spread.fo-b { display:grid; transform-origin:center center;
+    animation: flipOutFwd .72s cubic-bezier(.55,.055,.675,.19) both; }
+
+  /* ── NAV ZONES ─────────────────────────────────────── */
+  .nav-zone {
+    position:fixed; top:0; bottom:0; width:18%;
+    background:none; border:none;
+    display:flex; align-items:center;
+    font-size:2rem; color:transparent;
+    transition:color .25s; z-index:100; padding:0 1rem;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .nav-zone:hover { color:rgba(255,255,255,0.2); }
+  .nav-zone.lz { left:0;  justify-content:flex-start; }
+  .nav-zone.rz { right:0; justify-content:flex-end; }
+
+  /* ── PROGRESS ─────────────────────────────────────── */
+  #prog {
+    position:fixed; bottom:0; left:0; height:2px;
+    background:var(--seal); transition:width .5s ease; z-index:200;
+  }
+
+  /* ── SPREAD COUNTER ─────────────────────────────────── */
+  #ctr {
+    position:fixed; bottom:1rem; left:50%; transform:translateX(-50%);
+    font-family:var(--f-serif); font-style:italic;
+    font-size:var(--t-micro); color:rgba(255,255,255,0.22);
+    letter-spacing:0.1em; z-index:200; pointer-events:none;
+    white-space:nowrap;
+  }
+
+  /* ── TOC BUTTON ─────────────────────────────────────── */
+  #toc-btn {
+    position:fixed; top:1.4rem; left:1.4rem; z-index:400;
+    background:rgba(26,20,14,0.72); border:1px solid rgba(255,255,255,0.1);
+    color:rgba(216,210,194,0.65); font-size:1.1rem;
+    width:2.4rem; height:2.4rem;
+    display:flex; align-items:center; justify-content:center;
+    transition:background .2s;
+  }
+  #toc-btn:hover { background:rgba(50,40,30,0.88); }
+
+  /* ── TOC OVERLAY ─────────────────────────────────────── */
+  #toc-bd {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.45); z-index:500; display:none;
+  }
+  #toc-bd.open { display:block; }
+
+  #toc {
+    position:fixed; top:0; left:0; bottom:0;
+    width:min(360px,88vw);
+    background:var(--night); z-index:600;
+    transform:translateX(-100%); transition:transform .35s cubic-bezier(.22,.61,.36,1);
+    overflow-y:auto; padding:4rem 2.5rem 2rem;
+    border-right:1px solid rgba(255,255,255,0.05);
+  }
+  #toc.open { transform:translateX(0); }
+
+  #toc h3 {
+    font-family:var(--f-sans); font-size:var(--t-micro);
+    letter-spacing:0.25em; text-transform:uppercase;
+    color:rgba(216,210,194,0.38); margin-bottom:2rem;
+  }
+  .ti {
+    display:block; padding:0.55em 0;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    font-family:var(--f-serif); font-style:italic;
+    font-size:0.9rem; color:rgba(216,210,194,0.6);
+    background:none; border-left:none; border-right:none; border-top:none;
+    text-align:left; width:100%;
+    transition:color .18s; cursor:pointer;
+  }
+  .ti:hover { color:rgba(216,210,194,1); }
+  .ti.new   { color:var(--gold); font-style:normal; }
+  .ti.cur   { color:var(--night-paper); font-style:normal; }
+
+  #toc-close {
+    position:absolute; top:1.2rem; right:1.2rem;
+    background:none; border:none;
+    color:rgba(216,210,194,0.38); font-size:1.4rem; line-height:1;
+    transition:color .18s;
+  }
+  #toc-close:hover { color:rgba(216,210,194,0.8); }
+
+  /* ── COVER SPECIFICS ─────────────────────────────────── */
+  .cover-l {
+    background:var(--night);
+    display:flex; flex-direction:column;
+    justify-content:space-between; align-items:flex-start;
+    padding: clamp(2rem,4vw,3.5rem);
+  }
+  .cover-sig {
+    font-family:var(--f-sans); font-size:var(--t-micro);
+    letter-spacing:0.28em; text-transform:uppercase;
+    color:rgba(216,210,194,0.35);
+  }
+  .cover-r {
+    background:var(--night);
+    display:flex; flex-direction:column;
+    justify-content:center; align-items:flex-start;
+    padding: clamp(2.5rem,5vw,4.5rem) clamp(2rem,4vw,4rem);
+    position:relative;
+  }
+  .cover-subt {
+    font-family:var(--f-sans); font-size:var(--t-micro);
+    letter-spacing:0.22em; text-transform:uppercase;
+    color:rgba(216,210,194,0.45); margin-bottom:1.5em;
+  }
+  .cover-title {
+    font-family:var(--f-display); font-weight:300;
+    font-size:clamp(2.2rem,5vw,4.2rem);
+    color:var(--night-paper); line-height:1.0; margin-bottom:0.4em;
+  }
+  .cover-tagline {
+    font-family:var(--f-serif); font-style:italic;
+    font-size:clamp(0.82rem,1.1vw,0.98rem);
+    color:rgba(216,210,194,0.58); line-height:1.75;
+    max-width:38ch; margin-bottom:3em;
+  }
+  .cover-pub {
+    position:absolute; bottom:2.2rem; right:2.8rem;
+    text-align:right;
+  }
+  .cover-pub-name {
+    font-family:var(--f-sans); font-size:var(--t-micro);
+    letter-spacing:0.25em; text-transform:uppercase;
+    color:rgba(216,210,194,0.4);
+  }
+  .cover-pub-place {
+    font-family:var(--f-serif); font-style:italic;
+    font-size:0.74rem; color:rgba(216,210,194,0.28); margin-top:0.2em;
+  }
+  .stick-fig {
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-68%);
+    width:clamp(70px,11vw,130px); height:auto;
+    color:rgba(216,210,194,0.42);
+  }
+
+  /* ── BACK COVER ─────────────────────────────────────── */
+  .back-quote {
+    font-family:var(--f-display); font-style:italic;
+    font-size:clamp(0.95rem,1.5vw,1.2rem);
+    color:var(--night-paper); line-height:1.7; margin-bottom:1.8em;
+  }
+  .back-blurb {
+    font-family:var(--f-serif); font-size:var(--t-body);
+    color:rgba(216,210,194,0.58); line-height:1.75; max-width:44ch;
+  }
+  .back-pub {
+    position:absolute; bottom:2.2rem; left:2.8rem;
+    font-family:var(--f-sans); font-size:var(--t-micro);
+    letter-spacing:0.25em; text-transform:uppercase;
+    color:rgba(216,210,194,0.32);
+  }
+  .fin-page {
+    display:flex; justify-content:center; align-items:center;
+  }
+  .fin-txt {
+    font-family:var(--f-display); font-style:italic;
+    font-size:clamp(1rem,1.8vw,1.6rem);
+    color:rgba(216,210,194,0.32); letter-spacing:0.4em;
+  }
+
+  /* ── INTERRUPTION ─────────────────────────────────────── */
+  .interruption {
+    display:flex; flex-direction:column;
+    justify-content:center; height:100%;
+    padding: clamp(2rem,4vw,3.5rem);
+  }
+  .interrupt-label {
+    font-family:var(--f-sans); font-size:var(--t-micro);
+    letter-spacing:0.25em; text-transform:uppercase;
+    color:rgba(216,210,194,0.3); margin-bottom:2em;
+  }
+  .interrupt-body {
+    font-family:var(--f-display); font-style:italic;
+    font-size:clamp(1.1rem,1.8vw,1.5rem);
+    color:rgba(216,210,194,0.55); line-height:1.7;
+  }
+  .interrupt-body em { color:var(--gold); font-style:normal; }
+
+  /* ── MOBILE ─────────────────────────────────────────── */
+  @media (max-width: 760px) {
+    .book { width:100vw; aspect-ratio:1/1.45; transform:none; }
+    .spread { grid-template-columns:1fr; }
+    .spread::after { display:none; }
+    .page.left  { display:none; }
+    .page.right { padding:2.2rem 1.6rem; }
+    .page.right .folio { right:1.4rem; }
+    .show-left .page.left  { display:block; padding:2.2rem 1.6rem; }
+    .show-left .page.right { display:none; }
+    .show-left .page.left .folio { left:1.4rem; }
+    .nav-zone { width:30%; }
+  }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<button class="nav-zone lz" id="prev" aria-label="Previous">&#8249;</button>
+<button class="nav-zone rz" id="next" aria-label="Next">&#8250;</button>
+
+<!-- PROGRESS -->
+<div id="prog"></div>
+<div id="ctr"></div>
+
+<!-- TOC -->
+<button id="toc-btn" aria-label="Table of contents">&#8801;</button>
+<div id="toc-bd"></div>
+<nav id="toc" aria-label="Table of contents">
+  <button id="toc-close" aria-label="Close">&#215;</button>
+  <h3>Contents</h3>
+  <button class="ti" data-s="0">Cover</button>
+  <button class="ti" data-s="1">Foreword — On a small life carefully lived</button>
+  <button class="ti" data-s="2">A map of the wandering</button>
+  <button class="ti new" data-s="3">★ Why This Exists</button>
+  <button class="ti new" data-s="4">★ The Practice</button>
+  <button class="ti new" data-s="5">★ Your 100 Days — A Framework</button>
+  <button class="ti" data-s="6">I. By the bank of the Huangpu</button>
+  <button class="ti" data-s="7">II. Of his coffee addiction</button>
+  <button class="ti" data-s="8">III. On Death, and his father's flask</button>
+  <button class="ti" data-s="9">IV. Why he (gave up) love</button>
+  <button class="ti" data-s="10">V. On riding a train</button>
+  <button class="ti" data-s="11">VI. Writing by the Yangtze</button>
+  <button class="ti" data-s="12">VII. A bicycle technician in bad faith</button>
+  <button class="ti" data-s="13">VIII. Forty-four books, more or less</button>
+  <button class="ti" data-s="14">IX. His butterfly dream</button>
+  <button class="ti" data-s="15">X. On loneliness</button>
+  <button class="ti" data-s="16">XI. A corner café, mid-afternoon</button>
+  <button class="ti" data-s="17">XII. Kodawari, or, the long pursuit</button>
+  <button class="ti" data-s="18">XIII. A boat, mid-river</button>
+  <button class="ti" data-s="19">XIV. The power of now, told by a cicada</button>
+  <button class="ti" data-s="20">An interlude — Rain in the city</button>
+  <button class="ti" data-s="21">— Interruption —</button>
+  <button class="ti" data-s="22">XV. The saddest sonnet</button>
+  <button class="ti" data-s="23">How he got out of the darkest time</button>
+  <button class="ti" data-s="24">XVI. One small return</button>
+  <button class="ti" data-s="25">XVII. An accidental minimalist</button>
+  <button class="ti" data-s="26">XVIII. Home is where the heart is</button>
+  <button class="ti" data-s="27">XIX. A small roof, a small moon</button>
+  <button class="ti" data-s="28">XX. The discipline of small things</button>
+  <button class="ti" data-s="29">XXI. On freedom</button>
+  <button class="ti" data-s="30">XXII. A small nonism dictionary</button>
+  <button class="ti" data-s="31">XXIII. What he knows for sure</button>
+  <button class="ti" data-s="32">XXIV. The hundredth day</button>
+  <button class="ti" data-s="33">Afterword &amp; Colophon</button>
+  <button class="ti" data-s="34">— FIN —</button>
+</nav>
+
+<!-- BOOK -->
+<div class="stage">
+<div class="book idle" id="book">
+
+<!-- ░░ S0 — COVER ░░ -->
+<div class="spread night active" data-s="0">
+  <div class="page left cover-l">
+    <!-- Stick figure -->
+    <svg class="stick-fig" viewBox="0 0 60 130" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="30" cy="14" r="12"/>
+      <!-- infinity-ish mark on head -->
+      <path d="M24,14 C24,11 27,10 30,14 C33,18 36,17 36,14 C36,11 33,10 30,14 C27,18 24,17 24,14" stroke-width="0.9" opacity="0.7"/>
+      <!-- body -->
+      <line x1="30" y1="26" x2="30" y2="75"/>
+      <!-- arms -->
+      <line x1="10" y1="46" x2="50" y2="46"/>
+      <!-- legs -->
+      <line x1="30" y1="75" x2="12" y2="110"/>
+      <line x1="30" y1="75" x2="48" y2="110"/>
+    </svg>
+    <span class="cover-sig">non</span>
+    <span class="cover-sig">2025</span>
+  </div>
+  <div class="page right cover-r">
+    <span class="cover-subt">An Illustrated Travelogue</span>
+    <span class="cover-subt" style="margin-top:-1em;margin-bottom:1.8em;opacity:0.6;font-size:0.62rem;">after the writings of</span>
+    <div class="cover-title">100 Days of<br>Solitude</div>
+    <p class="cover-tagline">being a wandering account of <em style="font-style:italic;color:rgba(216,210,194,0.85)">Non</em>,<br>
+    who rode bicycles, drank coffee,<br>
+    read Montaigne, lost a father,<br>
+    wrote himself out of a dark room,<br>
+    and dreamed once of a butterfly.</p>
+    <div class="cover-pub">
+      <div class="cover-pub-name">NON·ISM PRESS</div>
+      <div class="cover-pub-place">Shanghai · 2025</div>
+    </div>
+  </div>
+</div>
+
+<!-- ░░ S1 — NOTE / FOREWORD ░░ -->
+<div class="spread" data-s="1">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;gap:1rem;">
+      <span class="section-lbl" style="justify-content:center;">A Note Before the Journey</span>
+      <blockquote style="font-family:var(--f-display);font-style:italic;font-size:clamp(1rem,1.6vw,1.3rem);color:var(--ink);line-height:1.65;max-width:34ch;margin:2rem auto;">
+        "Writing, first of all, is something one can only do alone."
+      </blockquote>
+      <p style="font-family:var(--f-serif);font-style:italic;font-size:0.82rem;color:var(--ink-faint);">— Day 1</p>
+    </div>
+    <span class="folio">i</span>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Foreword</span>
+    <h2>On a small life carefully lived</h2>
+    <div class="body">
+      <p>This is the story of <em>Non</em> — a Thai anthropologist who, somewhere between his thirties and his typewriter, decided to write himself a hundred days. He had not asked to be alone. Aloneness, like rain on the Yangtze, simply arrived.</p>
+      <p>What follows is a wandering record. He bicycles along the Huangpu. He drinks too much coffee. He reads Marcus Aurelius on a high-speed train. He meets a bicycle technician in bad faith. He dreams he is a butterfly, and is not entirely certain he has woken up.</p>
+      <p>He also, somewhere near the middle, sleeps on a sidewalk. We do not skip over that page. We turn it slowly, as one turns the page of a kind friend.</p>
+    </div>
+    <span class="folio">ii</span>
+  </div>
+</div>
+
+<!-- ░░ S2 — MAP ░░ -->
+<div class="spread" data-s="2">
+  <div class="page left">
+    <span class="section-lbl">A map without scale, drawn from memory.</span>
+    <div class="city-list">
+      <div class="city">Cambridge</div>
+      <div class="city">Beijing</div>
+      <div class="city">Shanghai</div>
+      <div class="city">Tokyo</div>
+      <div class="city">Bangkok</div>
+      <div class="city">Yangtze</div>
+    </div>
+    <div style="position:absolute;bottom:4rem;left:2.5rem;font-family:var(--f-sans);font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-faint);">N ↑</div>
+    <span class="folio">iii</span>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">The Cities He Slept In</span>
+    <h2>A map of the wandering</h2>
+    <div class="body">
+      <p>Bangkok, where his mother still lives, and where his father's typewriter waits. Cambridge, where he learned to be a stranger. Beijing, in 2006, where he stumbled — quite by accident — into the rest of his life.</p>
+      <p>Shanghai, on the Puxi side of the Huangpu, where most of these pages were written. The Yangtze, in the green country south. Tokyo, for one fascinated month of NHK World. And, when there was nowhere to go, the road itself.</p>
+      <p>He travels with seven kilograms. Anything more, the airline charges extra.</p>
+    </div>
+    <span class="folio">iv</span>
+  </div>
+</div>
+
+<!-- ░░ S3 — WHY THIS EXISTS (NEW) ░░ -->
+<div class="spread" data-s="3">
+  <div class="page left">
+    <div class="butterfly-dec">
+      <svg viewBox="0 0 120 80" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg">
+        <!-- body -->
+        <line x1="60" y1="18" x2="60" y2="68"/>
+        <!-- antennae -->
+        <line x1="60" y1="18" x2="50" y2="8"/><circle cx="49" cy="7" r="2" fill="currentColor" stroke="none"/>
+        <line x1="60" y1="18" x2="70" y2="8"/><circle cx="71" cy="7" r="2" fill="currentColor" stroke="none"/>
+        <!-- upper wings -->
+        <path d="M60,28 C50,16 28,10 18,22 C10,32 32,44 60,44"/>
+        <path d="M60,28 C70,16 92,10 102,22 C110,32 88,44 60,44"/>
+        <!-- lower wings -->
+        <path d="M60,44 C44,44 22,52 20,63 C18,72 40,74 60,64"/>
+        <path d="M60,44 C76,44 98,52 100,63 C102,72 80,74 60,64"/>
+      </svg>
+    </div>
+    <span class="folio">v</span>
+  </div>
+  <div class="page right">
+    <span class="meta-lbl">Why This Exists</span>
+    <h2>He did not set out to write a book.</h2>
+    <div class="body">
+      <p>He set out to write a day. One specific Tuesday evening, a specific quality of light on the Huangpu, and the feeling that if he did not write it down tonight, he would lose it — not the evening, but the self who was having it.</p>
+      <p>He had been writing, on and off, for ten years. The blog existed. The notebooks existed. But there had always been, somewhere between the blank page and the finished thing, a small committee assembled to argue against the project. The committee was, on most days, the majority.</p>
+      <p>The hundred days was an attempt to fire the committee. To write so regularly that the committee got bored and went home. It mostly worked.</p>
+      <p>This is what remains when the committee has gone home. A map without scale. A flask. A chain that still ticks, but in a slightly different time signature than before.</p>
+    </div>
+    <span class="folio">vi</span>
+  </div>
+</div>
+
+<!-- ░░ S4 — THE PRACTICE (NEW) ░░ -->
+<div class="spread" data-s="4">
+  <div class="page left">
+    <span class="meta-lbl">The Practice</span>
+    <h2 style="font-size:clamp(1.4rem,2.2vw,1.9rem);margin-bottom:1.8em;">The five rules</h2>
+    <div class="rule-row"><span class="rule-n">I</span><span class="rule-txt">Write every day. Not every weekday. <em>Every</em> day.</span></div>
+    <div class="rule-row"><span class="rule-n">II</span><span class="rule-txt">Publish immediately. No drafts that live only in the drawer.</span></div>
+    <div class="rule-row"><span class="rule-n">III</span><span class="rule-txt">Do not delete. The bad ones are also data.</span></div>
+    <div class="rule-row"><span class="rule-n">IV</span><span class="rule-txt">No minimum length. A sentence counts. A word counts.</span></div>
+    <div class="rule-row"><span class="rule-n">V</span><span class="rule-txt">No theme. Write what the day gives you.</span></div>
+    <span class="folio">vii</span>
+  </div>
+  <div class="page right">
+    <span class="meta-lbl">Methodology</span>
+    <h2>How to write a hundred days</h2>
+    <div class="body">
+      <p>The rules were minimal by design, because minimal rules are the only rules one keeps.</p>
+      <p>The practice did not produce consistency. It produced a <em>record</em>. The difference is important: a record has honest bad days in it; consistency is the edited version of a bad day.</p>
+      <p>Most of the difficulty is in the beginning of each day, not in the writing itself. The writing, once begun, wants to continue. It is the sitting down that requires something like courage.</p>
+      <p>He thinks of it now less as a writing practice and more as a daily appointment with himself — the only appointment, for a hundred days, that he did not cancel.</p>
+    </div>
+    <span class="folio">viii</span>
+  </div>
+</div>
+
+<!-- ░░ S5 — FRAMEWORK DIAGRAM (NEW) ░░ -->
+<div class="spread" data-s="5">
+  <div class="page left">
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 220 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+            <path d="M0,1 L0,6 L5,3.5 Z" fill="#b83a2a" opacity="0.65"/>
+          </marker>
+        </defs>
+        <!-- connector lines -->
+        <line x1="110" y1="58" x2="110" y2="98" stroke="#b83a2a" stroke-width="1.2" marker-end="url(#arr)" opacity="0.65"/>
+        <line x1="110" y1="158" x2="110" y2="198" stroke="#b83a2a" stroke-width="1.2" marker-end="url(#arr)" opacity="0.65"/>
+        <line x1="110" y1="258" x2="110" y2="294" stroke="#b83a2a" stroke-width="1.2" opacity="0.65"/>
+        <!-- loopback -->
+        <path d="M30,310 C10,310 10,20 30,20 L90,20" stroke="#b83a2a" stroke-width="1" stroke-dasharray="4 5" opacity="0.35" marker-end="url(#arr)"/>
+        <!-- nodes -->
+        <rect x="60" y="20" width="100" height="38" rx="0" fill="#f4ecd8" stroke="#b83a2a" stroke-width="1.2"/>
+        <rect x="60" y="98" width="100" height="60" rx="0" fill="#f4ecd8" stroke="#b83a2a" stroke-width="1.2"/>
+        <rect x="60" y="198" width="100" height="60" rx="0" fill="#f4ecd8" stroke="#b83a2a" stroke-width="1.2"/>
+        <rect x="60" y="295" width="100" height="20" rx="0" fill="#f4ecd8" stroke="#b83a2a" stroke-width="0.8" opacity="0.5"/>
+        <!-- node labels -->
+        <text x="110" y="34" text-anchor="middle" font-family="'Josefin Sans',sans-serif" font-size="7.5" letter-spacing="2" fill="#1f1a14">START</text>
+        <text x="110" y="46" text-anchor="middle" font-family="'EB Garamond',serif" font-style="italic" font-size="8.5" fill="#8a7e6a">a specific Tuesday</text>
+        <text x="110" y="116" text-anchor="middle" font-family="'Josefin Sans',sans-serif" font-size="7.5" letter-spacing="2" fill="#1f1a14">WRITE</text>
+        <text x="110" y="128" text-anchor="middle" font-family="'EB Garamond',serif" font-style="italic" font-size="8.5" fill="#8a7e6a">anything at all</text>
+        <text x="110" y="140" text-anchor="middle" font-family="'EB Garamond',serif" font-style="italic" font-size="8.5" fill="#8a7e6a">a sentence counts</text>
+        <text x="110" y="216" text-anchor="middle" font-family="'Josefin Sans',sans-serif" font-size="7.5" letter-spacing="2" fill="#1f1a14">PUBLISH</text>
+        <text x="110" y="228" text-anchor="middle" font-family="'EB Garamond',serif" font-style="italic" font-size="8.5" fill="#8a7e6a">address it to a reader</text>
+        <text x="110" y="240" text-anchor="middle" font-family="'EB Garamond',serif" font-style="italic" font-size="8.5" fill="#8a7e6a">even if that reader is you</text>
+        <text x="110" y="308" text-anchor="middle" font-family="'Josefin Sans',sans-serif" font-size="7" letter-spacing="1.5" fill="#8a7e6a" opacity="0.7">REST · REPEAT</text>
+        <!-- missed day note -->
+        <text x="160" y="168" font-family="'EB Garamond',serif" font-style="italic" font-size="7.5" fill="#8a7e6a" opacity="0.7">if you miss:</text>
+        <text x="160" y="178" font-family="'EB Garamond',serif" font-style="italic" font-size="7.5" fill="#8a7e6a" opacity="0.7">begin tomorrow.</text>
+      </svg>
+    </div>
+    <span class="folio">ix</span>
+  </div>
+  <div class="page right">
+    <span class="meta-lbl">Your 100 Days</span>
+    <h2>A diagram for the wanderer</h2>
+    <div class="body">
+      <p>The framework is intentionally simple. It survives bad days because it has to.</p>
+      <p><em>Start:</em> choose a day. Not Monday. Not January. Today. The ceremony of a proper beginning is the first thing the committee uses to stop you.</p>
+      <p><em>Write:</em> anything. The quality is not the point. The showing up is. A fisherman does not decide, each morning, whether the river deserves his presence.</p>
+      <p><em>Publish:</em> somewhere. A blog, a note to a friend, a locked document only you can see. The act of addressing something to a reader changes what you write.</p>
+      <p>If you miss a day: begin again tomorrow. Do not count the missed day as a failure. Count it as data.</p>
+      <p>The hundred days is not about writing. It is about becoming, incrementally, the kind of person who keeps going.</p>
+    </div>
+    <span class="folio">x</span>
+  </div>
+</div>
+
+<!-- ░░ S6 — DAY 1 (NIGHT) ░░ -->
+<div class="spread night" data-s="6">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;">
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);color:rgba(255,255,255,0.06);">1</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Shanghai · Day 1</span>
+    <span class="roman">I.</span>
+    <h2>By the bank of the Huangpu</h2>
+    <div class="body">
+      <p>Non rode his bicycle along the Puxi side of the river, and stopped, as he always did, where the lights of Pudong began to perform their nightly trick of multiplying themselves in water.</p>
+      <p>It was here he wrote his first day. He had not yet decided whether he would write a hundred. He had only decided to write tonight.</p>
+      <p>"No original idea worth spreading," he wrote, "can come from other people telling you what to write." The river, in any case, was telling him nothing at all.</p>
+    </div>
+    <div style="margin-top:1.5em;">
+      <p style="font-family:var(--f-sans);font-size:var(--t-micro);letter-spacing:0.15em;color:rgba(216,210,194,0.35);">DAY 1 · Tue, 24 Jun 2025</p>
+    </div>
+    <span class="folio">2</span>
+  </div>
+</div>
+
+<!-- ░░ S7 — DAY 19 COFFEE ░░ -->
+<div class="spread" data-s="7">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;">
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);">3</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Day 19</span>
+    <span class="roman">II.</span>
+    <h2>Of his coffee addiction</h2>
+    <div class="body">
+      <p>He drank coffee the way his father had drunk tea — obsessively, methodically, and from a single beloved vessel. The flask his father carried to the ministry every morning came back, every evening, exactly empty. Non admired this. He has tried, in his own way, to live as exactly.</p>
+      <p>He does not, in fact, succeed. Some days the cup is half-finished, the sentence half-written, the morning half-lived. But he is consistent in his attempts, which is, perhaps, the only consistency a man can hope for.</p>
+      <p>The cup beside the typewriter, beside the <em>Meditations</em>, beside the open notebook.</p>
+    </div>
+    <span class="folio">4</span>
+  </div>
+</div>
+
+<!-- ░░ S8 — DAY 26 FLASK ░░ -->
+<div class="spread" data-s="8">
+  <div class="page left">
+    <span class="section-lbl">Day 26</span>
+    <span class="roman">III.</span>
+    <h2>On Death, and on his father's flask</h2>
+    <div class="body">
+      <p>His father has been gone five years. Non had been abroad for the last decade of those years, which means that the man who lived in the photograph on the kitchen table and the man who had raised him are not, exactly, the same man.</p>
+      <p>What returned, instead, was the flask. A green steel thermos with a cup that screwed off the top. He fills it now, every morning, with hot water and one Lipton tea bag, the way his father did. It is not very good tea. It is, however, the only ritual he has not invented for himself.</p>
+      <p>When his colleagues ask why he carries so old a thing, he says: "It was the only thing he kept all the way through."</p>
+    </div>
+    <span class="folio">5</span>
+  </div>
+  <div class="page right">
+    <div class="center-block">
+      <p class="caption" style="text-align:center;">The flask, the cup, and the small steam of inheritance.</p>
+    </div>
+    <span class="folio">6</span>
+  </div>
+</div>
+
+<!-- ░░ S9 — DAYS 6&7 LOVE ░░ -->
+<div class="spread" data-s="9">
+  <div class="page left">
+    <div class="dots-grid" style="padding-top:2rem;">
+      <span>·</span><span>·</span><span>·</span><span>·</span>
+      <span>·</span><span>·</span><span>·</span><span>·</span>
+    </div>
+    <div class="center-block" style="flex:1;">
+      <span class="big-num" style="position:static;font-size:clamp(4rem,9vw,7rem);">7</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Days 6 &amp; 7</span>
+    <span class="roman">IV.</span>
+    <h2>Why he (gave up) love</h2>
+    <div class="body">
+      <p>It was not that he stopped loving — only that he had stopped expecting to be loved back in the same direction. He called this a "mid-life understanding," which is the polite cousin of a mid-life crisis.</p>
+      <p>He had loved, twice, three times, four. Each time the loving had felt enormous and inalienable, and each time he had been surprised, afterwards, to find his hands free again. He learned to admire this surprise. He learned, eventually, to look forward to it.</p>
+      <p style="font-style:italic;color:var(--ink-faint);">— and yet, the moth comes back to the lamp.</p>
+    </div>
+    <span class="folio">8</span>
+  </div>
+</div>
+
+<!-- ░░ S10 — DAY 24 TRAIN ░░ -->
+<div class="spread" data-s="10">
+  <div class="page left">
+    <span class="section-lbl">Day 24</span>
+    <span class="roman">V.</span>
+    <h2>On riding a train</h2>
+    <div class="body">
+      <p>His most favourite mode of transport. Twelve hours, sixteen hours, more — bring it on, he thinks. The high-speed network of China made the country smaller in the same hour it made his patience larger.</p>
+      <p>He liked the small geographies of a train. The window. The fold-down table. The paper cup of coffee that lasted exactly the time it took for the country to change colour, from rice-green to something older and drier —</p>
+    </div>
+    <span class="folio">9</span>
+  </div>
+  <div class="page right">
+    <div class="center-block">
+      <p class="caption" style="text-align:center;">Shanghai → Beijing,<br>somewhere west of Nanjing.</p>
+    </div>
+    <span class="folio">10</span>
+  </div>
+</div>
+
+<!-- ░░ S11 — DAY 53 YANGTZE ░░ -->
+<div class="spread" data-s="11">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;">
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);">11</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Day 53</span>
+    <span class="roman">VI.</span>
+    <h2>Writing by the Yangtze</h2>
+    <div class="body">
+      <p>He had not written for a month. Friends had begun to ask if he would, in fact, complete the hundred days. He never doubted he would; he had set the goal in order to achieve it.</p>
+      <p>What had stopped him was the small, daily violence of an ordinary year: false accusations from people he had trusted, jealous colleagues, students who could not be reached. The Spring Festival arrived, and with it his mother's gift — Marcus Aurelius's <em>Meditations</em>.</p>
+      <p>He read it on the train. The country changed colour. He picked up his pen.</p>
+    </div>
+    <span class="folio">12</span>
+  </div>
+</div>
+
+<!-- ░░ S12 — DAY 23 BICYCLE ░░ -->
+<div class="spread" data-s="12">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;">
+      <p class="handwritten" style="font-size:1.1rem;opacity:0.6;">— Repairs —</p>
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);">13</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Day 23</span>
+    <span class="roman">VII.</span>
+    <h2>A bicycle technician in bad faith</h2>
+    <div class="body">
+      <p>Sartre's waiter, Non thought, had come to Shanghai and opened a repair shop. The man over-performed his role: too eager, too solemn, too convinced of his own bicycle-technician-ness. The job, in the end, was not done.</p>
+      <p>Non paid him anyway. To argue with a man playing a part is to ask him, suddenly, to be free — and that is the most cruel thing one stranger can ask of another on a Saturday afternoon.</p>
+      <p>He walked the bike home. The chain still ticked, but in a slightly different time signature than before.</p>
+    </div>
+    <span class="folio">14</span>
+  </div>
+</div>
+
+<!-- ░░ S13 — DAY 100 BOOKS ░░ -->
+<div class="spread" data-s="13">
+  <div class="page left">
+    <span class="section-lbl">Day 100</span>
+    <span class="roman">VIII.</span>
+    <h2>Forty-four books, more or less</h2>
+    <div class="body">
+      <p>On the hundredth day he made a list. He listed Marcus Aurelius, of course. Montaigne. Rousseau. Thoreau. Cicero. Zhuangzi, who dreamed once that he was a butterfly.</p>
+      <p>He listed also a paperback he had bought at an airport in Singapore on a layover he could not now place, and a children's book his mother had read him at four, and a book whose author he could not remember but whose first chapter he could recite.</p>
+      <p>He noticed that his list had no novels. He thought this was probably a flaw. He decided, on the hundred-and-first day, that it was perhaps a confession.</p>
+    </div>
+    <span class="folio">15</span>
+  </div>
+  <div class="page right">
+    <div style="padding-top:2rem;">
+      <ul class="booklist">
+        <li>Meditations</li>
+        <li>Walden</li>
+        <li>Reveries</li>
+        <li>Zhuangzi</li>
+        <li>Montaigne</li>
+        <li>De Officiis</li>
+      </ul>
+      <p class="caption" style="margin-top:1.5em;">A rough inventory of the things he kept underlining.</p>
+    </div>
+    <span class="folio">16</span>
+  </div>
+</div>
+
+<!-- ░░ S14 — DAY 38 BUTTERFLY ░░ -->
+<div class="spread" data-s="14">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;gap:0.5rem;">
+      <span class="stars">✦ ✦ ✦ ✦ ✦</span>
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);">17</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Day 38</span>
+    <span class="roman">IX.</span>
+    <h2>His butterfly dream</h2>
+    <div class="body">
+      <p>Once upon a time, Zhuangzi dreamed that he was a butterfly. When he woke he was not certain whether he was Zhuangzi who had dreamed of being a butterfly, or a butterfly who was now dreaming of being Zhuangzi.</p>
+      <p>Non has had this dream. He has had it more than once. He has begun to suspect that the question is not which of the two he is — but which of the two he <em>prefers</em> to be, on any given Tuesday.</p>
+      <p>The butterfly seems, on most Tuesdays, to be winning.</p>
+    </div>
+    <p class="caption" style="margin-top:1.5em;font-style:italic;">and which of us is dreaming the other?</p>
+    <span class="folio">18</span>
+  </div>
+</div>
+
+<!-- ░░ S15 — DAY 43 LONELINESS ░░ -->
+<div class="spread" data-s="15">
+  <div class="page left">
+    <span class="section-lbl">Day 43</span>
+    <span class="roman">X.</span>
+    <h2>On loneliness</h2>
+    <div class="body">
+      <p>It was the night he watched the Oppenheimer drama on a twelve-inch laptop, with the only light in the room coming from the screen and the only sound from its speaker. He had bought a bottle of affordable French Merlot from the foreign-goods aisle at Walmart. He poured a glass, then a second.</p>
+      <p>The loneliness, he wrote later, was not empty. It was the loneliness of being without — and being aware that one is without — and finding that this awareness was, itself, a kind of company.</p>
+      <p>A small, almost-good loneliness, of the kind one can drink.</p>
+    </div>
+    <span class="folio">19</span>
+  </div>
+  <div class="page right">
+    <div class="dots-grid" style="padding-top:3rem;">
+      <span>·</span><span>·</span><span>·</span><span>·</span>
+      <span>·</span><span>·</span><span>·</span><span>·</span>
+    </div>
+    <span class="folio">20</span>
+  </div>
+</div>
+
+<!-- ░░ S16 — DAY 18 CAFÉ ░░ -->
+<div class="spread" data-s="16">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;">
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);">21</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Day 18</span>
+    <span class="roman">XI.</span>
+    <h2>A corner café, mid-afternoon</h2>
+    <div class="body">
+      <p>He had a corner he liked, on the third floor of a small place near the old French Concession. They served a flat white that was, he thought, neither flat nor white, but it came in a heavy cup he liked the weight of.</p>
+      <p>He wrote here on Tuesdays. Outside, the city's professionals walked past on the kind of business that requires a great deal of walking. He liked watching them. He felt, for the length of one cup, a member of their wide and wordless guild.</p>
+    </div>
+    <span class="folio">22</span>
+  </div>
+</div>
+
+<!-- ░░ S17 — DAY 116 KODAWARI ░░ -->
+<div class="spread" data-s="17">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;">
+      <p style="font-family:var(--f-display);font-size:clamp(2rem,4vw,3.2rem);color:var(--ink);opacity:0.4;letter-spacing:0.1em;">茶屋</p>
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);">23</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Day 116</span>
+    <span class="roman">XII.</span>
+    <h2>Kodawari, or, the long pursuit</h2>
+    <div class="body">
+      <p>2014–15 was the year he had only one English-language television channel, NHK World, in his Cambridge dormitory. He grew up on this channel a second time. Its favourite word was <em>kodawari</em> — the unending pursuit of a small, precise excellence.</p>
+      <p>He thought of his father's typewriter. He thought of the flask. He thought of the bicycle technician, who had pursued nothing for very long. <em>Kodawari</em>, he came to believe, was the difference between a man and a man playing a man.</p>
+    </div>
+    <span class="folio">24</span>
+  </div>
+</div>
+
+<!-- ░░ S18 — DAY 53 BOAT ░░ -->
+<div class="spread" data-s="18">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;">
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);">25</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Day 53 (continued)</span>
+    <span class="roman">XIII.</span>
+    <h2>A boat, mid-river</h2>
+    <div class="body">
+      <p>He paid a fisherman a small note to take him out for an hour. The man's boat was a single-room thing with a stove and a battery radio and a calendar from 2017 that he had not bothered to replace, since the dates, the man said, came back around eventually.</p>
+      <p>Non sat at the bow with his notebook closed in his lap. He had thought he would write. He found that he did not need to. The river, doing its long careful sentence, was sufficient.</p>
+    </div>
+    <span class="folio">26</span>
+  </div>
+</div>
+
+<!-- ░░ S19 — DAY 81 CICADA ░░ -->
+<div class="spread" data-s="19">
+  <div class="page left">
+    <span class="section-lbl">Day 81</span>
+    <span class="roman">XIV.</span>
+    <h2>The power of now, told by a cicada</h2>
+    <div class="body">
+      <p>It was 38°C and the cicadas were, all of them, in agreement. The blueprint of August, on the Yangtze, was: rise, sweat, drink water, sweat the water out, drink more water. He did this. He wrote a small thing about presence and felt foolish writing it. He wrote it anyway.</p>
+      <p>"The power of now," he wrote, "is mostly the power of having no other power." The cicadas seemed to agree. They had not stopped agreeing for three weeks.</p>
+    </div>
+    <span class="folio">27</span>
+  </div>
+  <div class="page right">
+    <div class="center-block">
+      <p class="caption" style="text-align:center;font-size:0.88rem;">A cicada keeping the time of August.</p>
+    </div>
+    <span class="folio">28</span>
+  </div>
+</div>
+
+<!-- ░░ S20 — RAIN INTERLUDE ░░ -->
+<div class="spread" data-s="20">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;">
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);">29</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">An Interlude</span>
+    <h2>Rain in the city</h2>
+    <div class="body">
+      <p>The city under rain seemed kinder than the city in sun. He liked how it asked nothing of him. He liked how strangers, becoming briefly and democratically wet together, smiled at each other under their dripping umbrellas as though they had all been let in on the same small secret.</p>
+      <p>A butterfly, having missed the memo, sheltered on his umbrella.</p>
+    </div>
+    <span class="folio">30</span>
+  </div>
+</div>
+
+<!-- ░░ S21 — INTERRUPTION (NIGHT) ░░ -->
+<div class="spread night" data-s="21">
+  <div class="page left">
+    <div class="interruption">
+      <span class="interrupt-label">An Interruption</span>
+      <p class="interrupt-body">— and then,<br>without warning,<br><em>the lights went out.</em></p>
+    </div>
+    <span class="folio">31</span>
+  </div>
+  <div class="page right fin-page">
+    <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);color:rgba(255,255,255,0.04);">32</span>
+  </div>
+</div>
+
+<!-- ░░ S22 — DAY 89 SADDEST SONNET (NIGHT) ░░ -->
+<div class="spread night" data-s="22">
+  <div class="page left">
+    <span class="section-lbl">Day 89</span>
+    <span class="roman" style="color:var(--gold);">XV.</span>
+    <h2>The saddest sonnet</h2>
+    <div class="body">
+      <p>Have you ever, he wrote, felt disgusted by your own existence? He had. The ten months before his doctorate were the weakest of his life. He was not afraid the work was bad. He was afraid of what came after the work — of being, as Rousseau put it, <em>forced to be free.</em></p>
+      <p>The world of students is small and protected. The world after is large and not. He had not yet, then, made friends with his own freedom.</p>
+      <p>A man, an empty room, a single bulb, a laptop screen.</p>
+    </div>
+    <span class="folio">33</span>
+  </div>
+  <div class="page right fin-page">
+    <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);color:rgba(255,255,255,0.04);">34</span>
+  </div>
+</div>
+
+<!-- ░░ S23 — DAY 108 DARKEST TIME (NIGHT) ░░ -->
+<div class="spread night" data-s="23">
+  <div class="page left fin-page">
+    <span class="stars" style="color:var(--gold);">✦</span>
+    <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);color:rgba(255,255,255,0.04);">35</span>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Day 108</span>
+    <h2>How he got out of the darkest time</h2>
+    <div class="body">
+      <p>He had gone, he wrote later, from "a career of his dream to being unemployed, and from there to being unemployable." Friends stopped answering. Then colleagues. Then, gradually, his own appetite. He weighed less than he had since fifteen.</p>
+      <p>He did not, in the end, take his life. His body was already doing the slow work of leaving. But one Tuesday — and he could not say afterwards what was different about that Tuesday — his hand reached for the typewriter instead of for the floor.</p>
+      <p>He typed the date. He typed the time. He typed the word "first."</p>
+    </div>
+    <span class="folio">36</span>
+  </div>
+</div>
+
+<!-- ░░ S24 — DAY 113 ONE SMALL RETURN ░░ -->
+<div class="spread" data-s="24">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;">
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);">37</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Day 113</span>
+    <span class="roman">XVI.</span>
+    <h2>One small return</h2>
+    <div class="body">
+      <p>That Tuesday, he found his father's two old typewriters in a renovation pile — Thai script on one, English on the other. He had grown up watching his father use them in their honourable, government-officer way: bills paid for strangers, letters written for neighbours, complaints filed on behalf of widows.</p>
+      <p>Non picked one up, threaded a sheet of paper, and wrote, slowly, "I am still here." The keys hit harder than he remembered. The typewriter, after all, has no soft option. It commits to every letter. He thought he could learn from this.</p>
+    </div>
+    <span class="folio">38</span>
+  </div>
+</div>
+
+<!-- ░░ S25 — DAY 110 MINIMALIST ░░ -->
+<div class="spread" data-s="25">
+  <div class="page left">
+    <span class="section-lbl">Day 110</span>
+    <span class="roman">XVII.</span>
+    <h2>An accidental minimalist</h2>
+    <div class="body">
+      <p>With nowhere to go and not much to go with, he travelled. Seven kilograms was the airline's limit; seven kilograms became his life. He traded a sixteen-inch laptop for a netbook the size of a magazine. He learned, over two years, that a man and a backpack and a pen are, between them, almost everything.</p>
+      <p>The first month abroad he kept reaching for things that were no longer in his life. The second month he stopped reaching. The third month he noticed he had stopped, and found that the noticing was, itself, a small private joy.</p>
+    </div>
+    <span class="folio">39</span>
+  </div>
+  <div class="page right">
+    <div class="center-block">
+      <p class="handwritten" style="text-align:center;display:block;">passport<br>non</p>
+      <p class="caption" style="text-align:center;margin-top:1.5em;">The kit of an accidental minimalist.</p>
+    </div>
+    <span class="folio">40</span>
+  </div>
+</div>
+
+<!-- ░░ S26 — DAY 61 HOME ░░ -->
+<div class="spread" data-s="26">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;">
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);">41</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Day 61</span>
+    <span class="roman">XVIII.</span>
+    <h2>Home is where the heart is</h2>
+    <div class="body">
+      <p>His mother lives on a side canal where the houses still stand on stilts, and where the longboats pass at the rhythm of an old metronome. He visits her twice a year. She gives him books. She gives him soup. She gives him advice that he ignores, exactly the appropriate amount.</p>
+      <p>It was she who gave him the <em>Meditations</em>, the year he most needed it. She has not asked, since, whether he read it. She is the kind of mother who can tell, from across a kitchen, what you have read.</p>
+    </div>
+    <span class="folio">42</span>
+  </div>
+</div>
+
+<!-- ░░ S27 — DAY 81 ROOF MOON ░░ -->
+<div class="spread" data-s="27">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;">
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);">43</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Day 81</span>
+    <span class="roman">XIX.</span>
+    <h2>A small roof, a small moon</h2>
+    <div class="body">
+      <p>There is, at his mother's house, a small flat roof which his father had built badly and which he had loved enormously. Non climbs it on hot evenings with a cup of weak tea. The moon comes up the way it always does. He does not, anymore, demand any more of it than this.</p>
+      <p>He thinks, sometimes, of the man he was at twenty-six. He would like to send that man a postcard. He would write: <em>You will be all right.</em> Not because nothing bad happens. Because you become, eventually, a person who does not need nothing-bad to be happening.</p>
+    </div>
+    <span class="folio">44</span>
+  </div>
+</div>
+
+<!-- ░░ S28 — DAY 116 DISCIPLINE ░░ -->
+<div class="spread" data-s="28">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;">
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);">45</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Day 116</span>
+    <span class="roman">XX.</span>
+    <h2>The discipline of small things</h2>
+    <div class="body">
+      <p>He has begun, lately, to sweep his floor every morning. It is not a large floor and it does not require sweeping. He sweeps it anyway. The motion is the same as the motion of writing a sentence: begin at one corner, end at the other, and try to leave behind only what is supposed to be there.</p>
+      <p>He has begun to think of his hundred days less as an achievement and more as a sweeping. The dust does not, of course, stop arriving. But the floor knows, by now, what it is.</p>
+    </div>
+    <p class="caption" style="margin-top:1.5em;font-style:italic;">leave only what is supposed to be there.</p>
+    <span class="folio">46</span>
+  </div>
+</div>
+
+<!-- ░░ S29 — DAY 93 FREEDOM ░░ -->
+<div class="spread" data-s="29">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;">
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);">47</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Day 93</span>
+    <span class="roman">XXI.</span>
+    <h2>On freedom</h2>
+    <div class="body">
+      <p>He has come to believe that freedom is not the absence of constraint. Freedom is being able to stand still in a wide, ordinary field at six in the evening and feel, distinctly, that this — and not the next thing, and not the thing after that — is the appointed place.</p>
+      <p>The bicycle leans against nothing, because there is nothing for it to lean against. It does not seem, on this evening, to mind.</p>
+    </div>
+    <span class="folio">48</span>
+  </div>
+</div>
+
+<!-- ░░ S30 — NONISM DICTIONARY ░░ -->
+<div class="spread" data-s="30">
+  <div class="page left">
+    <span class="section-lbl">Day 70</span>
+    <span class="roman">XXII.</span>
+    <h2 style="margin-bottom:1em;">A small nonism dictionary</h2>
+    <div class="dict-entry">
+      <span class="dict-term">non-ism</span><span class="dict-pos">n.</span>
+      <p class="dict-def">general abstention from activities and substances regarded as damaging to one's health or well-being. From Latin <em>non</em>, 'not.' See also: minimalism; the practice of leaving things alone.</p>
+    </div>
+    <div class="dict-entry">
+      <span class="dict-term">kodawari</span><span class="dict-pos">n. (Japanese)</span>
+      <p class="dict-def">the unending pursuit of a small precise excellence; a dignity reserved for those who have decided, finally, what is and is not worth doing well.</p>
+    </div>
+    <div class="dict-entry">
+      <span class="dict-term">bad faith</span><span class="dict-pos">phrase (after Sartre)</span>
+      <p class="dict-def">the condition of pretending one is not free; chiefly observable in waiters, professors, and bicycle technicians on Saturday afternoons.</p>
+    </div>
+    <span class="folio">49</span>
+  </div>
+  <div class="page right">
+    <p class="caption" style="margin-bottom:1.5em;">— continued</p>
+    <div class="dict-entry">
+      <span class="dict-term">solitude</span><span class="dict-pos">n.</span>
+      <p class="dict-def">not a punishment but a small territory in which a person may rehearse, in private, the voice he would like to use in public; cf. Montaigne, his tower.</p>
+    </div>
+    <div class="dict-entry">
+      <span class="dict-term">forced to be free</span><span class="dict-pos">phrase (after Rousseau)</span>
+      <p class="dict-def">the predicament of a man who has finished his protected work — a doctorate, a marriage, a youth — and finds himself, suddenly, the only author left of his life.</p>
+    </div>
+    <div class="dict-entry">
+      <span class="dict-term">the butterfly</span>
+      <p class="dict-def">see Zhuangzi, day 38, <em>et passim</em>. May refer to: an insect; a dream; the suspicion that one is, on most days, the wrong of two possibilities.</p>
+    </div>
+    <span class="folio">50</span>
+  </div>
+</div>
+
+<!-- ░░ S31 — DAY 98 WHAT HE KNOWS ░░ -->
+<div class="spread" data-s="31">
+  <div class="page left">
+    <div class="center-block" style="text-align:center;">
+      <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);">51</span>
+    </div>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Day 98</span>
+    <span class="roman">XXIII.</span>
+    <h2>What he knows for sure</h2>
+    <ul class="aphorism-list">
+      <li data-n="i">That writing is a friend who keeps his profound silent words.</li>
+      <li data-n="ii">That his father's flask still holds water at the right temperature for an entire morning.</li>
+      <li data-n="iii">That a good train ride is shorter than a bad afternoon.</li>
+      <li data-n="iv">That coffee, taken at the right hour, postpones a number of small unhappinesses.</li>
+      <li data-n="v">That he does not, in the end, remember which of him is the butterfly.</li>
+      <li data-n="vi">That if one writes a hundred days one is no longer the man who began on day one.</li>
+      <li data-n="vii">That this last item is the whole point of writing a hundred days.</li>
+    </ul>
+    <span class="folio">52</span>
+  </div>
+</div>
+
+<!-- ░░ S32 — DAY 100 HUNDREDTH ░░ -->
+<div class="spread" data-s="32">
+  <div class="page left">
+    <span class="section-lbl">Day 100</span>
+    <span class="roman">XXIV.</span>
+    <h2>The hundredth day</h2>
+    <div class="body">
+      <p>He woke at seven. He made coffee. He carried the cup to the desk. He sat down to write the hundredth day, and was surprised to find that he had nothing in particular to say. He had said, he thought, all of it. What was left was the saying of having said it.</p>
+      <p>So he wrote about the cup. The cup, he wrote, was warm. It was the same cup he had used on day one, ninety-nine mornings ago, beside the river. He had not, he noticed, broken it.</p>
+      <p>He thought this was probably the most important thing he had learned.</p>
+    </div>
+    <span class="folio">53</span>
+  </div>
+  <div class="page right fin-page">
+    <span class="big-num" style="position:static;font-size:clamp(6rem,14vw,11rem);color:rgba(31,26,20,0.05);">54</span>
+  </div>
+</div>
+
+<!-- ░░ S33 — AFTERWORD / COLOPHON ░░ -->
+<div class="spread" data-s="33">
+  <div class="page left">
+    <span class="section-lbl">Afterword</span>
+    <h2 style="font-size:clamp(1.1rem,1.8vw,1.5rem);margin-bottom:1em;">Punctuation as personality</h2>
+    <p style="font-family:var(--f-serif);font-size:var(--t-body);color:var(--ink-soft);line-height:1.6;margin-bottom:1em;">A reader counted, once, the marks he used most. The result is below. It is, perhaps, the closest thing to a portrait of him we have.</p>
+    <table class="stats-tbl">
+      <tr><td>Colons per 1,000 words</td><td>4.3</td><td>the punctuation of announcement</td></tr>
+      <tr><td>Em-dashes per 1,000 words</td><td>4.6</td><td>the lateral thought, late-arriving</td></tr>
+      <tr><td>Semicolons per 1,000 words</td><td>2.3</td><td>a careful joining</td></tr>
+      <tr><td>Ellipses, total</td><td>25</td><td>almost no trailing off</td></tr>
+      <tr><td>Avg. sentence — early</td><td>27.2</td><td>words</td></tr>
+      <tr><td>Avg. sentence — late</td><td>18.5</td><td>he compressed.</td></tr>
+    </table>
+    <span class="folio">55</span>
+  </div>
+  <div class="page right">
+    <span class="section-lbl">Colophon</span>
+    <h2 style="font-size:clamp(1.1rem,1.8vw,1.5rem);margin-bottom:1em;">A small note on the making</h2>
+    <div class="body">
+      <p>This book was set in Cormorant Garamond and EB Garamond, after a long argument about Caslon. The illustrations were drawn in single weight, with a single accent of vermillion ink — the colour of a Chinese name-seal, for reasons the maker thinks are obvious and which we are not, here, going to argue with.</p>
+      <p>The text, where quoted directly, comes from the writings of nonharvard, 2015–2025; the rest is the gentle invention of a fond third person.</p>
+      <p>He is, at the time of going to press, still alive. He is still drinking too much coffee. He has, however, finally swept the floor.</p>
+    </div>
+    <span class="folio">56</span>
+  </div>
+</div>
+
+<!-- ░░ S34 — BACK COVER (NIGHT) ░░ -->
+<div class="spread night" data-s="34">
+  <div class="page left" style="display:flex;flex-direction:column;justify-content:center;padding:clamp(2.5rem,5vw,4.5rem) clamp(2rem,4vw,4rem);position:relative;">
+    <blockquote class="back-quote">"He had not asked to be alone.<br>Aloneness, like rain on the Yangtze,<br>simply arrived."</blockquote>
+    <p class="back-blurb">An illustrated travelogue, after the writings of nonharvard — a Thai anthropologist who, between Shanghai and the Yangtze, wrote himself one hundred days, and on the hundred-and-eighth, came back.</p>
+    <span class="back-pub">NON·ISM PRESS</span>
+  </div>
+  <div class="page right fin-page">
+    <span class="fin-txt">— FIN —</span>
+  </div>
+</div>
+
+</div><!-- /book -->
+</div><!-- /stage -->
+
+<script>
+(function() {
+  const SPREADS = document.querySelectorAll('.spread');
+  const TOTAL   = SPREADS.length;
+  const book    = document.getElementById('book');
+  const prog    = document.getElementById('prog');
+  const ctr     = document.getElementById('ctr');
+  const toc     = document.getElementById('toc');
+  const tocBd   = document.getElementById('toc-bd');
+  const tocBtn  = document.getElementById('toc-btn');
+  const tocClose= document.getElementById('toc-close');
+
+  let cur  = 0;
+  let busy = false;
+
+  // Mobile: track which half we show for spreads with content on left
+  const SHOW_LEFT_SPREADS = [8, 10, 19, 25]; // spreads where prose is on left page
+
+  function isMobile() { return window.innerWidth <= 760; }
+
+  function updateUI() {
+    prog.style.width = (cur / (TOTAL - 1) * 100) + '%';
+    ctr.textContent  = (cur + 1) + ' / ' + TOTAL;
+    document.querySelectorAll('.ti').forEach(btn => {
+      btn.classList.toggle('cur', parseInt(btn.dataset.s) === cur);
+    });
+    book.classList.toggle('idle', cur === 0);
+  }
+
+  function go(n, dir) {
+    if (busy || n < 0 || n >= TOTAL || n === cur) return;
+    busy = true;
+
+    const from = SPREADS[cur];
+    const to   = SPREADS[n];
+
+    const outCls = dir === 'f' ? 'fo-f' : 'fo-b';
+    const inCls  = dir === 'f' ? 'fi-f' : 'fi-b';
+
+    from.classList.add(outCls);
+    to.classList.add(inCls);
+
+    setTimeout(() => {
+      from.classList.remove('active', outCls);
+      to.classList.remove(inCls);
+      to.classList.add('active');
+
+      // Mobile left-page override
+      if (isMobile() && SHOW_LEFT_SPREADS.includes(n)) {
+        to.classList.add('show-left');
+      }
+
+      cur  = n;
+      busy = false;
+      updateUI();
+    }, 720);
+  }
+
+  function next() { go(cur + 1, 'f'); }
+  function prev() { go(cur - 1, 'b'); }
+
+  // Init
+  updateUI();
+
+  // Click nav
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+
+  // Click on page halves (desktop)
+  document.addEventListener('click', e => {
+    if (toc.classList.contains('open')) return;
+    if (e.target.closest('#toc-btn, #toc, #toc-bd, .nav-zone')) return;
+    const x   = e.clientX;
+    const mid = window.innerWidth / 2;
+    if (x > mid * 1.1) next();
+    else if (x < mid * 0.9) prev();
+  });
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown'  || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp'                    ) { e.preventDefault(); prev(); }
+    if (e.key === 'Escape') closeToc();
+  });
+
+  // TOC
+  tocBtn.addEventListener('click',  () => { toc.classList.toggle('open'); tocBd.classList.toggle('open'); });
+  tocClose.addEventListener('click', closeToc);
+  tocBd.addEventListener('click',    closeToc);
+
+  function closeToc() {
+    toc.classList.remove('open');
+    tocBd.classList.remove('open');
+  }
+
+  document.querySelectorAll('.ti').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const n = parseInt(btn.dataset.s);
+      go(n, n > cur ? 'f' : 'b');
+      closeToc();
+    });
+  });
+
+  // Touch swipe
+  let tx0 = 0, ty0 = 0;
+  document.addEventListener('touchstart', e => {
+    tx0 = e.touches[0].clientX;
+    ty0 = e.touches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', e => {
+    if (toc.classList.contains('open')) return;
+    const dx = e.changedTouches[0].clientX - tx0;
+    const dy = e.changedTouches[0].clientY - ty0;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 45) {
+      if (dx < 0) next(); else prev();
+    }
+  }, { passive: true });
+
+  // Resize: clear show-left on desktop
+  window.addEventListener('resize', () => {
+    if (!isMobile()) {
+      document.querySelectorAll('.show-left').forEach(s => s.classList.remove('show-left'));
+    }
+  });
+})();
+</script>
+</body>
+</html>
