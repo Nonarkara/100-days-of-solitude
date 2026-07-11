@@ -5,3 +5,6 @@ ninja/
 slowdown/
 mean/
 dao/
+
+.DS_Store
+_dao-references/*.mp4
