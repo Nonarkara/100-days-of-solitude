@@ -8,3 +8,8 @@ dao/
 
 .DS_Store
 _dao-references/*.mp4
+
+# env files
+.env
+.env.*
+!.env.example
