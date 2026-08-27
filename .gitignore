@@ -7,7 +7,12 @@ mean/
 dao/
 
 .DS_Store
-_dao-references/*.mp4
+# Sensitive / private material — never commit (PII scans, copyrighted PDFs, local drafts)
+_dao-references/
+.wrangler/
+.private-dao/
+dao-internal/
+.archon/
 
 # env files
 .env
