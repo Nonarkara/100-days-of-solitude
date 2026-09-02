@@ -97,12 +97,12 @@ The days in this book are **selected evenings**, not a folder of Day 01…Day 10
 
 ```mermaid
 flowchart LR
-  Cover["Cover · butterfly-rest"] --> Front["Foreword · map · why"]
-  Front --> Practice["Five rules · the framework"]
-  Practice --> Days["Chapters I–XIV · selected days"]
-  Days --> Dark["Interlude · interruption · the darkest time"]
-  Dark --> Return["The return · dictionary · Day 100"]
-  Return --> End["Colophon · library"]
+  Cover[Cover] --> Front[Foreword]
+  Front --> Practice[Five rules]
+  Practice --> Days[Selected days]
+  Days --> Dark[Darkest time]
+  Dark --> Return[Day 100]
+  Return --> End[Library]
 ```
 
 The practice itself, as the book diagrams it:
