@@ -109,10 +109,10 @@ The practice itself, as the book diagrams it:
 
 ```mermaid
 flowchart TD
-  Start["START — a specific Tuesday"] --> Write["WRITE — anything at all<br/>a sentence counts"]
-  Write --> Publish["PUBLISH — address it to a reader<br/>even if that reader is you"]
-  Publish --> Rest["REST · REPEAT"]
-  Rest -.->|"if you miss: begin tomorrow"| Start
+  Start[Start] --> Write[Write]
+  Write --> Publish[Publish]
+  Publish --> Rest[Rest · Repeat]
+  Rest -.->|missed? begin tomorrow| Start
 ```
 
 Start today. Not Monday. Not January. The ceremony of a proper beginning is the first thing the committee uses to stop you. If you miss a day, begin again tomorrow. Count it as data.
