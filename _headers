@@ -14,3 +14,20 @@
 
 /assets/*
   Cache-Control: public, max-age=86400
+
+# Security headers for every route. Cache-Control rules above are unchanged.
+# Content-Security-Policy-Report-Only is report-only pending review.
+# It is not enforced, so it cannot block a resource or change how the page runs.
+# Allowed origins are taken from index.html only:
+#   script  https://static.cloudflareinsights.com/beacon.min.js
+#   style   https://fonts.googleapis.com/css2 (plus the inline <style> block)
+#   font    https://fonts.gstatic.com (preconnect, crossorigin)
+#   image   data: SVG parchment grain in the page stylesheet
+# Outbound book links (ninja, slowdown, mean, dao) are navigations, not subresources.
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
